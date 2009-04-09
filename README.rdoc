@@ -1,5 +1,5 @@
 
-= chlorine
+= Chlorine
 
 
 == Description
