@@ -1,0 +1,30 @@
+
+= chlorine
+
+
+== Description
+
+Browser extension generator.
+
+== Installation
+
+=== Archive Installation
+
+	rake install
+
+=== Gem Installation
+
+	gem install chlorine
+
+
+== Features/Problems
+
+
+== Synopsis
+
+
+== Copyright
+
+Author::    swdyh <http://mailhide.recaptcha.net/d?k=01AhB7crgrlHptVaYRD0oPwA==&c=L_iqOZrGmo6hcGpPTFg1QYnjr-WpAStyQ4Y8ShfgOHs=>
+Copyright:: Copyright (c) 2009 swdyh
+License::   

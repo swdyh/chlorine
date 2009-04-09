@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'chlorine'
+
+if ARGV.size >= 1
+  Chlorine.compile *ARGV
+else
+  puts 'input manifest path.'
+end

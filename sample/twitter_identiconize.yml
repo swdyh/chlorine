@@ -1,0 +1,15 @@
+name: twitter identiconize
+description: Replace twitter icon to identicon.
+content_scripts:
+  - js:
+      - twitter_identiconize.user.js
+#    matches:
+#      - http://www.google.com/*
+# id: aa
+# format_version: 1
+creator: swdyh
+version: 0.1
+home_page: http://relucks.org/
+firefox_extension_id: twitter_identiconize@relucks.org
+firefox_min_version: 3.0.0
+firefox_max_version: 3.0.*

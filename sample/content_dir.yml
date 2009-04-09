@@ -1,0 +1,12 @@
+name: Hello Google
+description: hello google
+content_scripts:
+  - js:
+      - hello_google.user.js
+creator: foo
+version: 0.1
+home_page: http://relucks.org/foo/
+content_dir: c
+firefox_extension_id: hello_google@relucks.org
+firefox_min_version: 3.0.0
+firefox_max_version: 3.0.*
