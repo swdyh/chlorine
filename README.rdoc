@@ -22,11 +22,24 @@ Browser extension generator.
 
 == Synopsis
 
-Create manifest file and execute chlorine command.
+Create manifest file.
+
+	name: Hello Google
+	description: hello google
+	content_scripts:
+	  - js:
+	      - hello_google.user.js
+	creator: foo
+	version: 0.1
+	home_page: http://relucks.org/foo/
+	firefox_extension_id: hello_google@relucks.org
+	firefox_min_version: 3.0.0
+	firefox_max_version: 3.0.*
+
+Execute chlorine command.
 
 	% chlorine manifest.yml
 
-There are some sample manifest files in "sample" directory.
 
 == Copyright
 
