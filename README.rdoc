@@ -22,6 +22,11 @@ Browser extension generator.
 
 == Synopsis
 
+Create manifest file and execute chlorine command.
+
+	% chlorine manifest.yml
+
+There are some sample manifest files in "sample" directory.
 
 == Copyright
 
