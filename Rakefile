@@ -16,7 +16,7 @@ BIN_FILES         = %w(chlorine)
 VERS              = "0.0.1"
 
 REV = File.read(".svn/entries")[/committed-rev="(d+)"/, 1] rescue nil
-CLEAN.include ['**/.*.sw?', '*.gem', '.config', '*.gemspec', '**/*.xpi', '**/.DS_Store']
+CLEAN.include ['**/.*.sw?', '*.gem', '.config', '*.gemspec', '**/*.xpi', '**/.DS_Store', '.rake_tasks']
 RDOC_OPTS = [
 	'--title', "#{NAME} documentation",
 	"--charset", "utf-8",
