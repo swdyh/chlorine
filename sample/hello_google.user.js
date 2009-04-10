@@ -7,5 +7,5 @@
 
 (function() {
     // alert('hello')
-    Chlorine.Notification.notify('hello', 'hello')
+    Notification.notify('hello', 'hello google')
 })()

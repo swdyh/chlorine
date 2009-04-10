@@ -30,8 +30,9 @@
                 var source = Greasemonkey.getContents(i)
                 var script = Greasemonkey.Script.parse(source, i)
                 if (script.matchesURL(href)) {
-                    injectScript(source, href, unsafeWin,
-                                 { Chlorine: ChlorineExt })
+                    injectScript(source, href, unsafeWin, ChlorineExt)
+//                    injectScript(source, href, unsafeWin,
+//                                 { Chlorine: ChlorineExt })
                 }
             })
         }
