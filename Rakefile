@@ -6,7 +6,7 @@ require 'rake/rdoctask'
 require 'fileutils'
 include FileUtils
 
-NAME              = "Chlorine"
+NAME              = "chlorine"
 AUTHOR            = "swdyh"
 EMAIL             = "http://mailhide.recaptcha.net/d?k=01AhB7crgrlHptVaYRD0oPwA==&c=L_iqOZrGmo6hcGpPTFg1QYnjr-WpAStyQ4Y8ShfgOHs="
 DESCRIPTION       = "Browser extension generator"
