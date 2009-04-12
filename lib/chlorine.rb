@@ -57,19 +57,16 @@ class Chlorine
 
     js = config['content_scripts'].select { |i| i['js'] }.map { |i| i['js'] }.flatten
     js.each { |i| FileUtils.cp i, cont_pn }
-    us_js = js.map { |i| "'chrome://#{config['name_lower']}/content/#{Pathname.new(i).basename}'" }.join(', ')
 
     usc_js_pn = cont_pn.join 'chlorine.js'
     inject_script = <<-EOS
 var appID = '#{config['firefox_extension_id']}'
-    var appName = '#{config['name']}'
-    var appNameLow = '#{config['name_lower']}'
-    var chromeURL = 'chrome://#{config['name_lower']}/'
-    var moduleURL = 'resource://#{config['name_lower']}-modules/'
-    var userscriptURLs = [#{us_js}]
+    var appDirName = '#{config['name_lower']}'
 EOS
-    usc_js = IO.read(usc_js_pn).gsub('// *INJECT_USC*', inject_script)
+    usc_js = IO.read(usc_js_pn).gsub('// *INJECT_CHLORINE*', inject_script)
     open(usc_js_pn, 'w') { |f| f.puts usc_js }
+
+    open(cont_pn.join('manifest.json'), 'w') { |f| f.puts JSON.pretty_generate(config) }
 
     FileUtils.cd dir do
       system "zip -qr -9 ../#{config['name_lower']}.xpi *"

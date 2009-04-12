@@ -1,5 +1,8 @@
 (function() {
-    // *INJECT_USC*
+    // var appID, appDirName
+    // *INJECT_CHLORINE*
+    var chromeURL = 'chrome://' + appDirName + '/'
+    var moduleURL = 'resource://' + appDirName  + '-modules/'
 
     var Utils = {}
     var Greasemonkey = {}
@@ -16,6 +19,28 @@
         Components.utils.import(moduleURL + 'ext/' + i.leafName, ChlorineExt)
     })
 
+    var isGreasemonkeyCompatible = true
+    if (isGreasemonkeyCompatible) {
+        ChlorineExt.GM_xmlhttpRequest = function(opt) {
+            ChlorineExt.HTTP.request(opt['url'], opt['onload'], opt)
+        }
+        var pref = new ChlorineExt.Pref(appID)
+        ChlorineExt.GM_getValue = function(key) {
+            return pref.get(key)
+        }
+        ChlorineExt.GM_setValue = function(key, val) {
+            pref.set(key, val)
+            return val
+        }
+        ChlorineExt.GM_log = ChlorineExt.Console.log
+        ChlorineExt.GM_registerMenuCommand = function() {}
+        ChlorineExt.GM_addStyle = function() {}
+        ChlorineExt.GM_getResourceURL = function() {}
+        ChlorineExt.console = ChlorineExt.Console
+    }
+
+    var manifest = ChlorineExt.JSON.parse(Greasemonkey.getContents(chromeURL + 'content/manifest.json'))
+
     var appcontent = window.document.getElementById("appcontent")
     var contentLoad = function(e) {
         var unsafeWin = e.target.defaultView
@@ -26,14 +51,18 @@
         var href = new XPCNativeWrapper(unsafeLoc, "href").href
 
         if (Greasemonkey.GM_isGreasemonkeyable(href)) {
-            userscriptURLs.forEach(function(i) {
-                var source = Greasemonkey.getContents(i)
-                var script = Greasemonkey.Script.parse(source, i)
-                if (script.matchesURL(href)) {
-                    injectScript(source, href, unsafeWin, ChlorineExt)
-//                    injectScript(source, href, unsafeWin,
-//                                 { Chlorine: ChlorineExt })
-                }
+            manifest['content_scripts'].filter(function(i) {
+                return !!i['js']
+            }).forEach(function(i) {
+                i['js'].forEach(function(j) {
+                    var script_url = chromeURL + 'content/' + j
+                    var source = Greasemonkey.getContents(script_url)
+                    var script = Greasemonkey.Script.parse(source, script_url)
+                    // FIXME to matches
+                    if (script.matchesURL(href)) {
+                        injectScript(source, href, unsafeWin, ChlorineExt)
+                    }
+                })
             })
         }
     }
