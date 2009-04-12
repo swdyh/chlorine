@@ -13,7 +13,7 @@ DESCRIPTION       = "Browser extension generator"
 RUBYFORGE_PROJECT = ""
 HOMEPATH          = ""
 BIN_FILES         = %w(chlorine)
-VERS              = "0.0.1"
+VERS              = "0.0.2"
 
 REV = File.read(".svn/entries")[/committed-rev="(d+)"/, 1] rescue nil
 CLEAN.include ['**/.*.sw?', '*.gem', '.config', '*.gemspec', '**/*.xpi', '**/.DS_Store', '.rake_tasks']
