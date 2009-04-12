@@ -1,0 +1,11 @@
+name: AutoPagerize
+description: loading next page and inserting into current page.
+content_scripts:
+  - js:
+      - autopagerize.user.js
+creator: swdyh
+version: 0.1
+home_page: http://relucks.org/autopagerize/
+firefox_extension_id: autopagerize@relucks.org
+firefox_min_version: 3.0.0
+firefox_max_version: 3.0.*
