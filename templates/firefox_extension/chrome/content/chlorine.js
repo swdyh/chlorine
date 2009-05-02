@@ -7,6 +7,7 @@
     var Utils = {}
     var Greasemonkey = {}
     Components.utils.import(moduleURL + 'file.jsm', Utils)
+    Components.utils.import(moduleURL + 'url_pattern.jsm', Utils)
     Components.utils.import(moduleURL + 'greasemonkey/userscript.jsm', Greasemonkey)
     Components.utils.import(moduleURL + 'greasemonkey/utils.jsm', Greasemonkey)
 
@@ -50,18 +51,25 @@
         var unsafeLoc = new XPCNativeWrapper(unsafeWin, "location").location
         var href = new XPCNativeWrapper(unsafeLoc, "href").href
 
-        if (Greasemonkey.GM_isGreasemonkeyable(href)) {
-            manifest['content_scripts'].filter(function(i) {
-                return !!i['js']
-            }).forEach(function(i) {
-                i['js'].forEach(function(j) {
-                    var script_url = chromeURL + 'content/' + j
-                    var source = Greasemonkey.getContents(script_url)
-                    var script = Greasemonkey.Script.parse(source, script_url)
-                    // FIXME to matches
-                    if (script.matchesURL(href)) {
-                        injectScript(source, href, unsafeWin, ChlorineExt)
-                    }
+        if (manifest['content_scripts'] &&
+            Greasemonkey.GM_isGreasemonkeyable(href)) {
+            var matches = manifest['content_scripts'].map(function(i) {
+                return i['matches']
+            })
+            var up = new Utils.URLPattern(matches)
+            up.matches(href).forEach(function(i) {
+                var cs = manifest['content_scripts'][i]
+                var js = cs['js'] || []
+                js.forEach(function(j) {
+                    var url = chromeURL + 'content/' + j
+                    var source = Greasemonkey.getContents(url)
+                    injectScript(source, href, unsafeWin, ChlorineExt)
+                })
+                var css = cs['css'] || []
+                css.concat(i['css']).forEach(function(c) {
+                    var url = chromeURL + 'content/' + c
+                    var source = Greasemonkey.getContents(url)
+                    injectStyleSheet(source, unsafeWin)
                 })
             })
         }
@@ -110,6 +118,21 @@
             e2.fileName = script.filename
             e2.lineNumber = 0
             alert(e2)
+        }
+    }
+
+    function injectStyleSheet(stylesheet, unsafeContentWin) {
+        var safeWin = new XPCNativeWrapper(unsafeContentWin)
+        var sandbox = new Components.utils.Sandbox(safeWin)
+        sandbox.window = safeWin
+        sandbox.document = sandbox.window.document
+
+        var style = sandbox.document.createElement('style')
+        var text = sandbox.document.createTextNode(stylesheet)
+        var head = sandbox.document.getElementsByTagName('head')[0]
+        style.appendChild(text)
+        if (head) {
+            head.appendChild(style)
         }
     }
 
