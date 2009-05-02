@@ -1,8 +1,12 @@
 name: Hello Google
 description: hello google
 content_scripts:
-  - js:
+  - matches:
+      - "http://www.google.co.jp/*"
+    js:
       - hello_google.user.js
+    css:
+      - f00.css
 creator: foo
 version: 0.1
 home_page: http://relucks.org/foo/
