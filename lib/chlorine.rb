@@ -55,8 +55,14 @@ class Chlorine
       FileUtils.rm i
     end
 
-    js = config['content_scripts'].select { |i| i['js'] }.map { |i| i['js'] }.flatten
-    js.each { |i| FileUtils.cp i, cont_pn }
+#    js = config['content_scripts'].select { |i| i['js'] }.map { |i| i['js'] }.flatten
+#    js.each { |i| FileUtils.cp i, cont_pn }
+
+    config['content_scripts'].map { |i| [i['js'], i['css']] }.flatten.select { |i| i}.each do |i|
+      if File.exists? i
+        FileUtils.cp i, cont_pn
+      end
+    end
 
     usc_js_pn = cont_pn.join 'chlorine.js'
     inject_script = <<-EOS
