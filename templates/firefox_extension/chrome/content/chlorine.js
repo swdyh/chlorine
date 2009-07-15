@@ -54,7 +54,6 @@
             })
             var up = new Utils.URLPattern(matches)
             up.matches(href).forEach(function(i) {
-                log(i)
                 var cs = manifest['content_scripts'][i]
                 var js = cs['js'] || []
                 js.forEach(function(j) {
