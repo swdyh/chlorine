@@ -1,4 +1,9 @@
 <?xml version="1.0" ?>
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-    <script type="application/x-javascript" src="chrome://<%= config['name_lower'] %>/content/chlorine.js" />
+    <script type="application/x-javascript" src="chrome://<%= manifest['dir_name'] %>/content/chlorine.js" />
+    <menupopup id="menu_ToolsPopup">
+        <menuitem label="<%= manifest['name'] %>"
+                  insertbefore="sanitizeSeparator"
+                  oncommand="gBrowser.selectedTab = gBrowser.addTab('chrome://<%= manifest['name'] %>/content/index.html')" />
+    </menupopup>
 </overlay>

@@ -5,11 +5,8 @@
     var moduleURL = 'resource://' + appDirName  + '-modules/'
 
     var Utils = {}
-    var Greasemonkey = {}
     Components.utils.import(moduleURL + 'file.jsm', Utils)
     Components.utils.import(moduleURL + 'url_pattern.jsm', Utils)
-    Components.utils.import(moduleURL + 'greasemonkey/userscript.jsm', Greasemonkey)
-    Components.utils.import(moduleURL + 'greasemonkey/utils.jsm', Greasemonkey)
 
     var extDir = Utils.File.getExtDir(appID)
     var extModulesDir = extDir.clone()
@@ -40,8 +37,7 @@
         ChlorineExt.console = ChlorineExt.Console
     }
 
-    var manifest = ChlorineExt.JSON.parse(Greasemonkey.getContents(chromeURL + 'content/manifest.json'))
-
+    var manifest = ChlorineExt.JSON.parse(Utils.File.read(chromeURL + 'content/manifest.json'))
     var appcontent = window.document.getElementById("appcontent")
     var contentLoad = function(e) {
         var unsafeWin = e.target.defaultView
@@ -52,23 +48,24 @@
         var href = new XPCNativeWrapper(unsafeLoc, "href").href
 
         if (manifest['content_scripts'] &&
-            Greasemonkey.GM_isGreasemonkeyable(href)) {
+            isGreasemonkeyable(href)) {
             var matches = manifest['content_scripts'].map(function(i) {
                 return i['matches']
             })
             var up = new Utils.URLPattern(matches)
             up.matches(href).forEach(function(i) {
+                log(i)
                 var cs = manifest['content_scripts'][i]
                 var js = cs['js'] || []
                 js.forEach(function(j) {
                     var url = chromeURL + 'content/' + j
-                    var source = Greasemonkey.getContents(url)
+                    var source = Utils.File.read(url)
                     injectScript(source, href, unsafeWin, ChlorineExt)
                 })
                 var css = cs['css'] || []
-                css.concat(i['css']).forEach(function(c) {
+                css.forEach(function(c) {
                     var url = chromeURL + 'content/' + c
-                    var source = Greasemonkey.getContents(url)
+                    var source = Utils.File.read(url)
                     injectStyleSheet(source, unsafeWin)
                 })
             })
@@ -138,5 +135,14 @@
 
     function log() {
         Application.console.log(Array.prototype.slice.call(arguments))
+    }
+
+    function isGreasemonkeyable(url) {
+        var scheme = Components.classes["@mozilla.org/network/io-service;1"]
+            .getService(Components.interfaces.nsIIOService)
+            .extractScheme(url);
+        return (scheme == "http" || scheme == "https" || scheme == "file" ||
+                scheme == "ftp" || url.match(/^about:cache/)) &&
+            !/hiddenWindow\.html$/.test(url);
     }
 })()

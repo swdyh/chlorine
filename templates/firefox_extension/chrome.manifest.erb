@@ -1,3 +1,3 @@
-content <%= config['name_lower'] %> chrome/content/
-overlay chrome://browser/content/browser.xul chrome://<%= config['name_lower'] %>/content/overlay.xul
-resource <%= config['name_lower'] %>-modules modules/
+content <%= manifest['dir_name'] %> chrome/content/
+overlay chrome://browser/content/browser.xul chrome://<%= manifest['dir_name'] %>/content/overlay.xul
+resource <%= manifest['dir_name'] %>-modules modules/
