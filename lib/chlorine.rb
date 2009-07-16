@@ -55,7 +55,7 @@ class Chlorine
 
     Pathname.glob(dir + '**/*.erb').each do |i|
       f = i.to_s.gsub(/\.erb$/, '')
-      open(f, 'w') { |f| f.write ERB.new(IO.read(i)).result(binding) }
+      open(f, 'w') { |f| f.write ERB.new(IO.read(i), nil, '-').result(binding) }
       FileUtils.rm i
     end
 
