@@ -7,12 +7,18 @@
         <em:version><%= manifest['version'] %></em:version>
         <em:description><%= manifest['description'] %></em:description>
         <em:creator><%= manifest['creator'] %></em:creator>
+        <%- if manifest['firefox_update_url'] -%>
+        <em:updateURL><%= manifest['firefox_update_url'] %></em:updateURL>
+        <%- end -%>
+        <%- if manifest['firefox_update_key'] -%>
+        <em:updateKey><%= manifest['firefox_update_key'] %></em:updateKey>
+        <%- end -%>
         <em:type>2</em:type>
         <em:targetApplication>
             <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-                <em:minVersion>3.0.0</em:minVersion>
-                <em:maxVersion>3.5.*</em:maxVersion>
+                <em:minVersion><%= manifest['firefox_min_version'] %></em:minVersion>
+                <em:maxVersion><%= manifest['firefox_max_version'] %></em:maxVersion>
             </Description>
         </em:targetApplication>
     </Description>
