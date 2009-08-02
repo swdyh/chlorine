@@ -44,8 +44,17 @@
         if (unsafeWin.wrappedJSObject) {
             unsafeWin = unsafeWin.wrappedJSObject
         }
+        var safeWin = new XPCNativeWrapper(unsafeWin)
         var unsafeLoc = new XPCNativeWrapper(unsafeWin, "location").location
         var href = new XPCNativeWrapper(unsafeLoc, "href").href
+        var sandbox = new Components.utils.Sandbox(safeWin)
+        sandbox.window = safeWin
+        sandbox.document = sandbox.window.document
+        sandbox.__proto__ = sandbox.window
+        sandbox.XPathResult = Components.interfaces.nsIDOMXPathResult
+        for (var i in ChlorineExt) {
+            sandbox[i] = ChlorineExt[i]
+        }
 
         if (manifest['content_scripts'] &&
             isGreasemonkeyable(href)) {
@@ -55,18 +64,20 @@
             var up = new Utils.URLPattern(matches)
             up.matches(href).forEach(function(i) {
                 var cs = manifest['content_scripts'][i]
-                var js = cs['js'] || []
-                js.forEach(function(j) {
-                    var url = chromeURL + 'content/' + j
-                    var source = Utils.File.read(url)
-                    injectScript(source, href, unsafeWin, ChlorineExt)
-                })
-                var css = cs['css'] || []
-                css.forEach(function(c) {
-                    var url = chromeURL + 'content/' + c
-                    var source = Utils.File.read(url)
-                    injectStyleSheet(source, unsafeWin)
-                })
+                if (cs['js']) {
+                    var js = cs['js'].map(function(j) {
+                        var url = chromeURL + 'content/' + j
+                        return Utils.File.read(url)
+                    })
+                    injectScripts(js, href, unsafeWin, sandbox)
+                }
+                if (cs['css']) {
+                    var css = cs['css'].map(function(c) {
+                        var url = chromeURL + 'content/' + c
+                        return Utils.File.read(url)
+                    }).join("\n")
+                    injectStyleSheet(css, unsafeWin, sandbox)
+                }
             })
         }
     }
@@ -89,40 +100,22 @@
     window.addEventListener('load', onLoad, false)
     window.addEventListener('unload', onUnLoad, false)
 
-    function injectScript(script, url, unsafeContentWin, ext) {
-        var safeWin = new XPCNativeWrapper(unsafeContentWin)
-        var sandbox = new Components.utils.Sandbox(safeWin)
-        sandbox.window = safeWin
-        sandbox.document = sandbox.window.document
-        sandbox.__proto__ = sandbox.window
-        // patch missing properties on xpcnw
-        sandbox.XPathResult = Components.interfaces.nsIDOMXPathResult
-
-        // unsafeWIndow
-        // sandbox.unsafeWindow = unsafeContentWin
-
-        for (var i in ext) {
-            sandbox[i] = ext[i]
-        }
-
-        try {
-            var code = "(function(){" + script + "})()"
-            Components.utils.evalInSandbox(code, sandbox)
-        }
-        catch (e) {
-            var e2 = new Error(typeof e == "string" ? e : e.message)
-            e2.fileName = script.filename
-            e2.lineNumber = 0
-            alert(e2)
-        }
+    function injectScripts(scripts, url, unsafeContentWin, sandbox) {
+        scripts.forEach(function(script) {
+            try {
+                var code = "(function(){" + script + "})()"
+                Components.utils.evalInSandbox(code, sandbox)
+            }
+            catch (e) {
+                var e2 = new Error(typeof e == "string" ? e : e.message)
+                e2.fileName = script.filename
+                e2.lineNumber = 0
+                alert(e2)
+            }
+        })
     }
 
-    function injectStyleSheet(stylesheet, unsafeContentWin) {
-        var safeWin = new XPCNativeWrapper(unsafeContentWin)
-        var sandbox = new Components.utils.Sandbox(safeWin)
-        sandbox.window = safeWin
-        sandbox.document = sandbox.window.document
-
+    function injectStyleSheet(stylesheet, unsafeContentWin, sandbox) {
         var style = sandbox.document.createElement('style')
         var text = sandbox.document.createTextNode(stylesheet)
         var head = sandbox.document.getElementsByTagName('head')[0]
