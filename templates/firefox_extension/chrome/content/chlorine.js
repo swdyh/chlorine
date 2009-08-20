@@ -43,9 +43,14 @@
         ChlorineExt.console = ChlorineExt.Console
     }
 
+    var initialized = false
     var manifest = ChlorineExt.JSON.parse(Utils.File.read(chromeURL + 'content/manifest.json'))
     var appcontent = window.document.getElementById("appcontent")
     var contentLoad = function(e) {
+        if (!initialized) {
+            init()
+            initialized = true
+        }
         var unsafeWin = e.target.defaultView
         if (unsafeWin.wrappedJSObject) {
             unsafeWin = unsafeWin.wrappedJSObject
@@ -105,6 +110,14 @@
     }
     window.addEventListener('load', onLoad, false)
     window.addEventListener('unload', onUnLoad, false)
+
+    function init() {
+        if (manifest['background_script']) {
+            var loader = Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+                .getService(Components.interfaces.mozIJSSubScriptLoader)
+            loader.loadSubScript(chromeURL + 'content/' + manifest['background_script'], ChlorineExt)
+        }
+    }
 
     function injectScripts(scripts, url, unsafeContentWin, sandbox) {
         scripts.forEach(function(script) {
