@@ -18,6 +18,8 @@
     })
     ChlorineExt.chlorine = {}
     ChlorineExt.chlorine.statusBar = new ChlorineExt.StatusBar(window, chromeURL + 'content/')
+    ChlorineExt.chlorine.pageAction = new ChlorineExt.PageAction(window, chromeURL + 'content/')
+
     ChlorineExt.chlorine.pref = new ChlorineExt.Pref(appID)
     ChlorineExt.chlorine.open = function(path) {
         gBrowser.selectedTab = gBrowser.addTab(chromeURL + 'content/' + path)
