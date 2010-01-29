@@ -20,6 +20,20 @@
     ChlorineExt.chlorine.statusBar = new ChlorineExt.StatusBar(window, chromeURL + 'content/')
     ChlorineExt.chlorine.pageAction = new ChlorineExt.PageAction(window, chromeURL + 'content/')
 
+    // https://developer.mozilla.org/En/Code_snippets/Progress_Listeners
+    var chlorineUrlBarListener = {
+        QueryInterface: function(aIID) {
+            if (aIID.equals(Components.interfaces.nsIWebProgressListener) ||
+                aIID.equals(Components.interfaces.nsISupportsWeakReference) ||
+                aIID.equals(Components.interfaces.nsISupports))
+            return this
+            throw Components.results.NS_NOINTERFACE
+        },
+        onLocationChange: function(aProgress, aRequest, aURI) {
+            ChlorineExt.chlorine.pageAction.onLocationChange()
+        }
+    }
+
     ChlorineExt.chlorine.pref = new ChlorineExt.Pref(appID)
     ChlorineExt.chlorine.open = function(path) {
         gBrowser.selectedTab = gBrowser.addTab(chromeURL + 'content/' + path)
@@ -101,6 +115,8 @@
             appcontent.addEventListener("DOMContentLoaded",
                                         contentLoad, false)
         }
+        gBrowser.addProgressListener(chlorineUrlBarListener,
+            Components.interfaces.nsIWebProgress.NOTIFY_LOCATION)
     }
     var onUnLoad = function () {
         window.removeEventListener('load', onLoad, false)
@@ -109,6 +125,7 @@
             appcontent.removeEventListener("DOMContentLoaded",
                                            contentLoad, false)
         }
+        gBrowser.removeProgressListener(chlorineUrlBarListener)
     }
     window.addEventListener('load', onLoad, false)
     window.addEventListener('unload', onUnLoad, false)

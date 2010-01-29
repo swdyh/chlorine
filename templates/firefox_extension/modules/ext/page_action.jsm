@@ -3,6 +3,7 @@ var EXPORTED_SYMBOLS = ['PageAction']
 function PageAction(window, contentPath) {
     this.window = window
     this.contentPath = contentPath
+    this.onLocationChange = function() {}
 }
 PageAction.prototype.add = function(opt) {
     var window = this.window
@@ -38,11 +39,17 @@ PageAction.prototype.add = function(opt) {
     this.img = img
 }
 PageAction.prototype.updateImg = function(path) {
-    this.img.setAttribute('src', this.contentPath + path)
+    if (this.img) {
+        this.img.setAttribute('src', this.contentPath + path)
+    }
 }
 PageAction.prototype.hide = function(path) {
-    this.img.style.display = 'none'
+    if (this.img) {
+        this.img.style.display = 'none'
+    }
 }
 PageAction.prototype.show = function(path) {
-    this.img.style.display = 'block'
+    if (this.img) {
+        this.img.style.display = 'block'
+    }
 }
